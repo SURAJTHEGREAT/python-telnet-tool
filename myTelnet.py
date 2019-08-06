@@ -47,6 +47,8 @@ class myTelnet(object):
         self.regularPrompt = ""
         # port is empty at start
         self.telnetPort=""
+        # set default log path
+        self.logPath="log"
         self.cleanTestRunVariables()
         self.commandsList = []
         self.addPredefPrompts = False
@@ -68,7 +70,8 @@ class myTelnet(object):
 
     def initiateLogName(self,**kwargs):
         if(len(kwargs)==0 or kwargs==None):
-            self.logName =  time.strftime("%Y%b%d%a%H%M%S", time.localtime())
+            # logName should have the logPath
+            self.logName =  self.logPath + '/' + time.strftime("%Y%b%d%a%H%M%S", time.localtime())
         elif('customLog' in kwargs):
             self.logName = kwargs['customLog']
         if(self.useGui):

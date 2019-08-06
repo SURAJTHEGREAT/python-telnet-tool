@@ -7,3 +7,5 @@ Changes :
 3. Introduced the telnetPort in drop down of GUI (telnetToolGui.py)
 
 4. Parse the xml to handle telnetPort
+
+5. Instead of logging in the folder of code , log into "log" folder
