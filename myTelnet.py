@@ -45,6 +45,8 @@ class myTelnet(object):
         self.userName = ""
         self.passwd = ""
         self.regularPrompt = ""
+        # port is empty at start
+        self.telnetPort=""
         self.cleanTestRunVariables()
         self.commandsList = []
         self.addPredefPrompts = False
@@ -55,7 +57,6 @@ class myTelnet(object):
         if(self.addPredefPrompts):
             self.addPredefinedPrompts()
         self.initiateLogName()
-        self.telnetPort = 2345
         self.timeout_sessionOpening = 10
         self.timeout_command = 7
 
@@ -92,6 +93,13 @@ class myTelnet(object):
 
     def getHost(self):
         return self.targetIP
+
+    # getter and setter for ports 
+    def setPort(self,port):
+        self.telnetPort = port
+
+    def getPort(self):
+        return self.telnetPort
 
     def setUsr(self,usr):
         self.userName =  usr
@@ -228,7 +236,10 @@ class myTelnet(object):
             output = self.telnet.read_until(self.getDefaultPromptUtf8(),self.timeout_command)
             #end timer
             endTime = time.time()
+            # timer difference
             executionTime=endTime-startTime
+            # add to list - to calculate total time taken to 
+            # execute all commands
             self.executionTimeList.append(executionTime)
         except:
             commandResult = False
@@ -245,6 +256,7 @@ class myTelnet(object):
                     #only for validating
                     #self.myTelnetLogging(repr(output),"info")
             self.myTelnetLogging("Response: {" + output + "}","info")
+            # log the execution time 
             self.myTelnetLogging("Execution time of above command is:{:.3f} sec".format(executionTime),"info")
             self.numberOfSamples = self.numberOfSamples + 1
             if(len(exp)>0):
@@ -343,6 +355,7 @@ class myTelnet(object):
                 htmlContents = htmlContents + "<font color=red>"
             elif(re.search("Scenario pass rate equals",i)):
                 htmlContents = htmlContents + "<font color=green>"
+            # if the execution time pattern is available , font color is blue in html    
             elif(re.search("Execution time",i)):
                 htmlContents = htmlContents + "<font color=blue>"
             htmlContents = htmlContents + i
@@ -352,6 +365,7 @@ class myTelnet(object):
         logFile.close()
 
     def calculateFinalResult(self):
+        # calculate the total time for execution
         self.myTelnetLogging("Total Execution time is:{:.3f} sec".format(sum(self.executionTimeList)),"info")
         #clear the list
         self.executionTimeList.clear()
@@ -379,6 +393,10 @@ class myTelnet(object):
                 self.setHost(tf.confDict["ipaddress"])
             else:
                 self.setHost(tf.confDict[""])
+            if("telnetPort" in tf.confDict):
+                self.setPort(tf.confDict["telnetPort"])
+            else:
+                self.setPort(tf.confDict[""])    
             if("username" in tf.confDict):
                 self.setUsr(tf.confDict["username"])
             else:
@@ -425,7 +443,8 @@ class myTelnet(object):
         return comDicts
 
     def buildConfDict(self):
-        confDict = {'host':self.getHost(),'name':self.getUsr(),'password':self.getPswd(),'login prompt':self.getLoginPrompt(),'password prompt':self.getPasswordPrompt(),'default prompt':self.getDefaultPrompt()}
+        # introduced the port parameter in dict
+        confDict = {'host':self.getHost(),'port':self.getPort(),'name':self.getUsr(),'password':self.getPswd(),'login prompt':self.getLoginPrompt(),'password prompt':self.getPasswordPrompt(),'default prompt':self.getDefaultPrompt()}
         return confDict
 
     def clearOptions(self):
@@ -442,6 +461,8 @@ class myTelnet(object):
 
     def clearConfig(self):
         self.setHost("")
+        #clear the port when new button is clicked
+        self.setPort("")
         self.setUsr("")
         self.setPswd("")
         self.setLoginPrompt("")
@@ -460,6 +481,7 @@ class myTelnet(object):
 
     def printOptions(self):
         print("\nhost: "+self.getHost())
+        print("\nport: "+self.getPort())
         print("\nuser name : "+self.getUsr())
         print("\npassword : "+self.getPswd())
         print("\nlogin prompt : "+self.getLoginPrompt())
@@ -497,6 +519,7 @@ class myTelnet(object):
                 if(re.search("Scenario pass rate equals 100",msg)):
                     self.guiTextHandler.insert(tkinter.END ,"info: " + msg + "\n",('100_tag'))
                 elif(re.search("Execution time",msg)):
+                    # for execution time , add the timer tag it comes from GUI file
                     self.guiTextHandler.insert(tkinter.END ,"info: " + msg + "\n",('timer_tag'))
                 else:
                     self.guiTextHandler.insert(tkinter.END ,"info: " + msg + "\n")

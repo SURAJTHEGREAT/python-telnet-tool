@@ -79,7 +79,8 @@ class telnetToolGui(object):
         self.configCombo = Combobox(self.configFrame, textvariable=self.configComboVar)
         self.configCombo.pack(side=LEFT)
         self.configCombo.bind('<<ComboboxSelected>>', self.configComboBoxEvent)
-        self.configCombo['values'] = ("ipaddress","username","password","loginprompt","passprompt","regularprompt")
+        #added telnet port in tuple
+        self.configCombo['values'] = ("ipaddress","telnetPort","username","password","loginprompt","passprompt","regularprompt")
         self.configCombo.state(['!disabled'])
         self.configEntryVar = StringVar()
         self.configEntryVar.trace("w",self.configChange)
@@ -179,6 +180,8 @@ class telnetToolGui(object):
         self.mytelnet.setHost("0.0.0.0")
         self.mytelnet.setUsr("user name")
         self.mytelnet.setPswd("password")
+        #default port
+        self.mytelnet.setPort("23")
 
     def saveBtnAction(self):
         if(self.currentFileChanged):
@@ -239,6 +242,7 @@ class telnetToolGui(object):
             logTextBox.pack(side=LEFT, fill=BOTH)
             logTextBox.tag_configure('warn_tag',foreground='red')
             logTextBox.tag_configure('100_tag',foreground='#00cc00')
+            #introduce the timer tag
             logTextBox.tag_configure('timer_tag',foreground='blue')
             self.logWindow.transient(self.root)
             self.mytelnet.initiateGuiHandlers(treeview=self.treeview, text=logTextBox, label=logVar, progress=testprogress)
@@ -290,6 +294,9 @@ class telnetToolGui(object):
     def displayOptionsInEntry(self,option):
         if(option=="ipaddress"):
             self.configEntryVar.set(self.mytelnet.getHost())
+        # to display port in GUI    
+        elif(option=="telnetPort"):
+            self.configEntryVar.set(self.mytelnet.getPort())     
         elif(option=="username"):
             self.configEntryVar.set(self.mytelnet.getUsr())
         elif(option=="password"):
@@ -408,6 +415,10 @@ class telnetToolGui(object):
         if(thisOption=="ipaddress"):
             self.mytelnet.setHost(entryValue)
             self.currentFileChanged = True
+        # modify the port when pressed save    
+        if(thisOption=="telnetPort"):
+            self.mytelnet.setPort(entryValue)
+            self.currentFileChanged = True            
         if(thisOption=="username"):
             self.mytelnet.setUsr(entryValue)
             self.currentFileChanged = True

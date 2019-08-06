@@ -46,7 +46,7 @@ class telnetFiles(object):
         xmlRootElement = newXml.documentElement
         configNode = newXml.createElement("config")
         xmlRootElement.appendChild(configNode)
-        configArray = [['ipaddress','host'],['username','name'],['password','password'],['loginprompt','login prompt'],['passprompt','password prompt'],['regularprompt','default prompt']]
+        configArray = [['ipaddress','host'],['telnetPort','port'],['username','name'],['password','password'],['loginprompt','login prompt'],['passprompt','password prompt'],['regularprompt','default prompt']]
         for i in configArray:
             subConfigNode = newXml.createElement(i[0])
             subConfigText = newXml.createTextNode(self.confDict[i[1]])
@@ -94,7 +94,7 @@ class telnetFiles(object):
                 nodeString = i.toxml()
                 if(re.search("config",nodeString)):
                     configNodesList = i.childNodes
-                    configSearch = ["ipaddress","username","password","loginprompt","passprompt","regularprompt"]
+                    configSearch = ["ipaddress","telnetPort","username","password","loginprompt","passprompt","regularprompt"]
                     self.confDict = self.searchNodes(configNodesList,configSearch)
                 elif(re.search("commands",nodeString)):
                     commandsNodesList = i.childNodes
